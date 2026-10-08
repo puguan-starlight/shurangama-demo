@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>楞嚴經誦經電子書</title><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>楞嚴經誦經電子書</title><meta name="shurangama-build" content="20261008-automatic-v1"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>
 // Stop older offline versions from holding on to outdated HTML; reading history is unaffected.
 (function(){
   if (!('serviceWorker' in navigator)) return;
@@ -31,7 +31,7 @@ function settings(){document.documentElement.style.setProperty('--reader-font',s
 function nav(){return '<div class="nav"><button data-nav="home">首頁</button><button data-nav="search">搜尋</button><button data-nav="history">紀錄</button><button data-nav="stats">統計</button></div>'}
 function top(title){return '<div class="top"><button data-nav="home">‹</button><strong>'+esc(title)+'</strong><button id="settings">Aa</button></div>'}
 function wire(){document.querySelectorAll('[data-nav]').forEach(x=>x.onclick=()=>({home,search,history,stats}[x.dataset.nav]||home)());document.querySelectorAll('[data-open]').forEach(x=>x.onclick=()=>reader(+x.dataset.open));let x=document.getElementById('settings');if(x)x.onclick=settingPanel}
-function home(){view='home';const done=sets();const pct=Math.max(0,Math.min(100,done*10));el.innerHTML=top('楞嚴經誦經電子書')+'<main><section class="hero"><h1>大佛頂首楞嚴經</h1><div class="muted">卷一至卷十 · 共修齊誦標點校訂版</div></section><div class="panel goal-banner"><strong>楞嚴經共修發願十部</strong><div class="goal-deadline">完成期限：'+DEADLINE+'</div><div class="goal-progress"><div class="goal-progressbar"><span style="width:'+pct+'%"></span></div><div class="goal-progresstext">圓滿 '+done+' / 10 部</div></div><div class="muted" style="margin-top:8px">每卷各完成一次為一部；每完成一個階段，顯示獎勵畫面。</div></div>'+cards()+'<h3>經文卷目</h3><div class="grid">'+DATA.books.map(b=>'<button class="card" data-open="'+b.volume+'"><strong>卷'+b.volumeZh+'</strong><small>完成 '+(state.counts[b.volume]||0)+' 次 · 閱讀 '+Math.round((state.progress[b.volume]?.ratio||0)*100)+'%</small></button>').join('')+'</div></main>'+nav();wire()}
+function home(){view='home';if(nextBuild){setTimeout(applyPendingUpdate,0);}const done=sets();const pct=Math.max(0,Math.min(100,done*10));el.innerHTML=top('楞嚴經誦經電子書')+'<main><section class="hero"><h1>大佛頂首楞嚴經</h1><div class="muted">卷一至卷十 · 共修齊誦標點校訂版</div></section><div class="panel goal-banner"><strong>楞嚴經共修發願十部</strong><div class="goal-deadline">完成期限：'+DEADLINE+'</div><div class="goal-progress"><div class="goal-progressbar"><span style="width:'+pct+'%"></span></div><div class="goal-progresstext">圓滿 '+done+' / 10 部</div></div><div class="muted" style="margin-top:8px">每卷各完成一次為一部；每完成一個階段，顯示獎勵畫面。</div></div>'+cards()+'<h3>經文卷目</h3><div class="grid">'+DATA.books.map(b=>'<button class="card" data-open="'+b.volume+'"><strong>卷'+b.volumeZh+'</strong><small>完成 '+(state.counts[b.volume]||0)+' 次 · 閱讀 '+Math.round((state.progress[b.volume]?.ratio||0)*100)+'%</small></button>').join('')+'</div></main>'+nav();wire()}
 function cards(){return '<div class="statgrid">'+[['今日',today()],['本月',month()],['累計卷次',total()],['圓滿部數',sets()]].map(x=>'<div class="stat"><b>'+x[1]+'</b><small>'+x[0]+'</small></div>').join('')+'</div>'}
 function showReward(payload){const prev=document.getElementById('rewardOverlay');if(prev)prev.remove();const overlay=document.createElement('div');overlay.id='rewardOverlay';overlay.className='reward-overlay';const stage=payload.stage||0;const reward=STAGE_REWARDS[Math.min(10,Math.max(1,stage||1))]||null;const isStage=payload.type==='stage';const isFinal=isStage&&stage>=10;const nextStage=stage<10?'下一階段：圓滿第'+zhNum(stage+1)+'部':'已圓滿十部發願';const title=isStage?(reward?.title||'完成一個階段'):'本卷完成';const badge=isStage?(reward?.badge||'🎉 階段達成'):'✅ 誦經完成';const stageLine=isStage?('第 '+stage+' / 10 部'):('目前圓滿 '+stage+' / 10 部');const body=isStage?(reward?.copy||('恭喜完成卷'+payload.volumeZh+'，已達成第'+zhNum(stage)+'部。\n持續共修，福慧增長。')):('卷'+payload.volumeZh+'已記錄完成一次。\n距離下一階段更近一步。');overlay.innerHTML='<section class="reward-card '+(isFinal?'reward-final':'')+'" role="dialog" aria-modal="true" aria-label="完成獎勵"><div class="reward-stars">✦ ✦ ✦</div><div class="reward-halo">🪷</div><div class="reward-badge">'+badge+'</div><div class="reward-titleline">楞嚴經共修發願十部</div><h2>'+title+'</h2><div class="reward-stage">'+stageLine+'</div><p>'+body+'</p><div class="reward-deadline">完成期限：'+DEADLINE+'</div><p class="reward-note">'+nextStage+'</p><div class="reward-actions"><button type="button" class="secondary" id="rewardGoHome">回首頁</button><button type="button" class="primary" id="rewardClose">繼續閱讀</button></div></section>';document.body.appendChild(overlay);const close=()=>overlay.remove();overlay.addEventListener('click',e=>{if(e.target===overlay)close()});overlay.querySelector('#rewardClose').onclick=close;overlay.querySelector('#rewardGoHome').onclick=()=>{close();home()};}
 function reader(v,idx){view='reader';current=v;state.lastVolume=v;save();let b=book(v);el.innerHTML=top('卷'+b.volumeZh)+'<main style="padding:0"><div class="reader"><h2>大佛頂首楞嚴經 · 卷'+b.volumeZh+'</h2>'+b.opening.map(x=>'<section class="lit"><h3>'+esc(x.title)+'</h3><div>'+esc(x.text)+'</div></section>').join('')+'<h2>'+esc(b.fullTitle)+'</h2>'+b.paragraphs.map((p,i)=>'<p data-p="'+i+'" class="'+(p.verse?'verse':'')+'">'+esc(p.text)+'</p>').join('')+b.closing.map(x=>'<section class="lit"><h3>'+esc(x.title)+'</h3><div>'+esc(x.text)+'</div></section>').join('')+'<button class="primary" id="completeBottom" style="width:100%">本卷誦畢 ＋1</button></div></main><div class="actions"><button id="prev">上一卷</button><button class="primary" id="recite">'+(state.active?.volume===v?'結束誦經':'開始誦經')+'</button><button id="next">下一卷</button></div>'+nav();wire();document.getElementById('prev').onclick=()=>v>1&&reader(v-1);document.getElementById('next').onclick=()=>v<10&&reader(v+1);document.getElementById('recite').onclick=()=>{state.active=state.active?.volume===v?null:{volume:v,startedAt:Date.now()};save();reader(v)};document.getElementById('completeBottom').onclick=()=>{const before=sets();let now=Date.now();state.counts[v]=(state.counts[v]||0)+1;state.history.unshift({id:now+'-'+v,volume:v,startedAt:state.active?.volume===v?state.active.startedAt:null,completedAt:now,durationMin:state.active?.volume===v?Math.max(1,Math.round((now-state.active.startedAt)/60000)):null});state.active=null;state.progress[v]={ratio:1,updatedAt:now};save();const after=sets();reader(v);showReward({type:after>before?'stage':'volume',stage:after,volumeZh:b.volumeZh})};if(idx!==undefined)setTimeout(()=>document.querySelector('[data-p="'+idx+'"]').scrollIntoView({block:'center'}),30);else if(state.progress[v]?.ratio)setTimeout(()=>scrollTo(0,(document.documentElement.scrollHeight-innerHeight)*state.progress[v].ratio),50)}
@@ -57,6 +57,40 @@ function settingPanel(){
  overlay.querySelector('#doneReaderSettings').onclick=close;
  overlay.onclick=e=>{if(e.target===overlay)close()};
 }
+// Automatic version checks. Never clear the existing localStorage data.
+const SHURANGAMA_BUILD='20261008-automatic-v1';
+let nextBuild='',checkingBuild=false,lastBuildCheck=0;
+const canUpdateNow=()=>view==='home'&&!state.active&&!document.getElementById('readerSettingsOverlay')&&!document.getElementById('rewardOverlay');
+function applyPendingUpdate(){
+ if(!nextBuild||!canUpdateNow())return;
+ const url=new URL(location.href);
+ if(url.searchParams.get('v')===nextBuild){nextBuild='';return}
+ url.searchParams.set('v',nextBuild);
+ location.replace(url.href);
+}
+async function checkForUpdates(force=false){
+ if(checkingBuild||document.visibilityState==='hidden')return;
+ if(!force&&Date.now()-lastBuildCheck<120000)return;
+ lastBuildCheck=Date.now();checkingBuild=true;
+ try{
+  const u=new URL(location.pathname,location.origin);
+  u.searchParams.set('_check',String(Date.now()));
+  const res=await fetch(u.href,{cache:'no-store',credentials:'same-origin',redirect:'follow'});
+  if(!res.ok)return;
+  const html=await res.text();
+  const match=html.match(/<meta\s+name=["']shurangama-build["']\s+content=["']([^"']+)["']/i);
+  if(!match||!/^\d{8}-/.test(match[1]))return;
+  if(match[1]>SHURANGAMA_BUILD){nextBuild=match[1];applyPendingUpdate()}
+ }catch(_){/* offline: keep reading */}
+ finally{checkingBuild=false}
+}
+// Re-check when coming back to the site; defer reload during scripture reading.
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){applyPendingUpdate();checkForUpdates(true)}});
+window.addEventListener('pageshow',()=>{applyPendingUpdate();checkForUpdates(true)});
+window.addEventListener('focus',()=>{applyPendingUpdate();checkForUpdates()});
+setInterval(()=>{if(document.visibilityState==='visible'){applyPendingUpdate();checkForUpdates()}},120000);
+setTimeout(()=>checkForUpdates(true),1200);
+
 settings();home();
 })();
 </script></body></html>
